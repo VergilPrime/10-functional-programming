@@ -1,7 +1,7 @@
 'use strict';
 var app = app || {};
 
-let Article = ((module)=> {
+(module=> {
   // TODONE: Wrap the contents of this file, except for the preceding 'use strict' and 'var app...' declararions, in an IIFE.
   // Give the IIFE a parameter called 'module'.
   // At the very end of the code, but still inside the IIFE, attach the 'Article' object to 'module'.
@@ -37,7 +37,7 @@ let Article = ((module)=> {
     rawData.forEach(articleObject => Article.all.push(new Article(articleObject)))
 
   */
-    Article.all = rawdata.map((articleObject)=> return new Article(articleObject));
+    Article.all = rawData.map((articleObject)=> {return new Article(articleObject);});
 
   };
 
@@ -66,17 +66,24 @@ let Article = ((module)=> {
   };
 
   Article.numWordsByAuthor = () => {
-    return Article.allAuthors().map(author => {
+    let authorMap = Article.allAuthors().map((author) => {
       // TODONE: Transform each author string into an object with properties for the author's name, as well as the total number of words across all articles written by the specified author.
       // HINT: This .map() should be set up to return an object literal with two properties.
       // The first property should be pretty straightforward, but you will need to chain some combination of .filter(), .map(), and .reduce() to get the value for the second property.
-      Article.all.reduce((count,article)=> {
-        if(article.author === author){
-          count += article.body.split(' ').length;
+      let count = Article.all.reduce((wordcount,article)=> {
+        if(article.author === author) {
+          return wordcount += article.body.split(' ').length;
         }
-        return count;
-      },0)
+        return wordcount;
+      },0);
+      return [author,count];
     })
+    authorMap.forEach((authorArray)=> {
+      let $authorLi = $('#author-template').clone();
+      $authorLi.removeClass('author-template');
+      console.log('HTML:' + $authorLi.html());
+    });
+    return(authorMap);
   };
 
   Article.truncateTable = callback => {
@@ -123,6 +130,5 @@ let Article = ((module)=> {
       .then(console.log)
       .then(callback);
   };
-  module = Article;
-  return(Article);
+  module.Article = Article;
 })(app);
